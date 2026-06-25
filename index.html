@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WM OBS Overlay mit Erweiterten Stats</title>
+    <title>WM OBS Overlay mit zentrierten Stats</title>
     <style>
         body {
             margin: 0;
@@ -162,28 +162,28 @@
         
         .center-logo span { font-size: 24px; line-height: 1; }
 
-        /* --- STATISTIK PANEL CSS --- */
+        /* --- STATISTIK PANEL CSS (Zentriert & Langsamer) --- */
         .stats-panel {
             background-color: rgba(0, 0, 0, 0.85);
             color: #ffffff;
-            width: 85%; 
+            width: 340px; /* Deutlich schmaler, genau in der Mitte */
             border-radius: 0 0 20px 20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             font-family: 'Arial', sans-serif; 
             font-weight: bold;
             font-size: 16px;
             
-            /* Animations-Setup für mehr Zeilen angepasst */
+            /* Neue Animations-Werte: 1.2 Sekunden & ease-in-out */
             max-height: 0;
             opacity: 0;
             overflow: hidden;
-            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 1.2s ease-in-out;
             transform: translateY(-20px);
             z-index: 5;
         }
 
         .stats-panel.active {
-            max-height: 350px; /* Erhöht für 8 Zeilen */
+            max-height: 350px; 
             opacity: 1;
             transform: translateY(0);
             padding: 15px 0;
@@ -191,22 +191,22 @@
 
         .stat-row {
             display: flex;
-            justify-content: space-between;
+            justify-content: center; /* Alles strikt in der Mitte ausrichten */
             align-items: center;
-            padding: 4px 30px; /* Minimal weniger Padding, damit es kompakt bleibt */
+            padding: 4px 0;
         }
 
         .stat-label {
             color: #90f3c5;
-            font-size: 13px; /* Minimal verkleinert für längere Wörter */
+            font-size: 13px; 
             text-transform: uppercase;
             letter-spacing: 1px;
-            width: 160px;
+            width: 160px; /* Feste Breite für die Beschriftung in der Mitte */
             text-align: center;
         }
 
         .stat-value {
-            width: 50px;
+            width: 50px; /* Feste Breite für die Zahlen links und rechts */
             text-align: center;
             font-size: 18px;
         }
