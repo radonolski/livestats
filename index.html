@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WM OBS Overlay mit zentrierten Stats</title>
+    <title>WM OBS Overlay mit perfekt zentrierten Stats</title>
     <style>
         body {
             margin: 0;
@@ -32,7 +32,7 @@
             height: 60px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             position: relative;
-            z-index: 10; 
+            /* Z-Index entfernt, damit die Stats dahinter rutschen können */
         }
 
         .scoreboard-side {
@@ -156,42 +156,46 @@
             font-family: Arial, sans-serif;
             font-weight: bold;
             font-size: 10px;
-            z-index: 3; 
+            position: relative; /* WICHTIG: Bezugspunkt für das Statistik-Panel */
             box-shadow: 0 0 5px rgba(0,0,0,0.2);
         }
         
         .center-logo span { font-size: 24px; line-height: 1; }
 
-        /* --- STATISTIK PANEL CSS (Zentriert & Langsamer) --- */
+        /* --- STATISTIK PANEL CSS --- */
         .stats-panel {
+            position: absolute;
+            top: 45px; /* Rutscht von direkt unter dem Logo heraus */
+            left: 50%; /* 100% zentriert am Logo */
             background-color: rgba(0, 0, 0, 0.85);
             color: #ffffff;
-            width: 340px; /* Deutlich schmaler, genau in der Mitte */
+            width: 340px; 
             border-radius: 0 0 20px 20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             font-family: 'Arial', sans-serif; 
             font-weight: bold;
             font-size: 16px;
             
-            /* Neue Animations-Werte: 1.2 Sekunden & ease-in-out */
+            /* Animations-Setup (Langsamer & weicher) */
             max-height: 0;
             opacity: 0;
             overflow: hidden;
             transition: all 1.2s ease-in-out;
-            transform: translateY(-20px);
-            z-index: 5;
+            transform: translateX(-50%) translateY(-20px);
+            z-index: -1; /* Zieht das Panel komplett HINTER das Scoreboard */
+            pointer-events: none; /* Verhindert fehlerhafte Klicks im Stream */
         }
 
         .stats-panel.active {
             max-height: 350px; 
             opacity: 1;
-            transform: translateY(0);
-            padding: 15px 0;
+            transform: translateX(-50%) translateY(0);
+            padding: 30px 0 15px 0; /* Oben etwas mehr Platz, da es von hinten vorfährt */
         }
 
         .stat-row {
             display: flex;
-            justify-content: center; /* Alles strikt in der Mitte ausrichten */
+            justify-content: center; 
             align-items: center;
             padding: 4px 0;
         }
@@ -201,17 +205,17 @@
             font-size: 13px; 
             text-transform: uppercase;
             letter-spacing: 1px;
-            width: 160px; /* Feste Breite für die Beschriftung in der Mitte */
+            width: 160px; 
             text-align: center;
         }
 
         .stat-value {
-            width: 50px; /* Feste Breite für die Zahlen links und rechts */
+            width: 50px; 
             text-align: center;
             font-size: 18px;
         }
         
-        /* Karten-Farben für die Statistik */
+        /* Karten-Farben */
         .yellow-card { color: #f1c40f; }
         .red-card { color: #e74c3c; }
     </style>
@@ -219,6 +223,7 @@
 <body>
 
     <div class="overlay-container">
+        <!-- HAUPT SCOREBOARD -->
         <div class="scoreboard">
             <div class="scoreboard-side left">
                 <div class="time-box" id="match-time">
@@ -232,7 +237,54 @@
                 <div class="score-box" id="team1-score">0</div>
             </div>
 
-            <div class="center-logo"><span>🏆</span>FIFA</div>
+            <!-- LOGO (Darin versteckt sich nun das Stats-Panel!) -->
+            <div class="center-logo">
+                <span>🏆</span>FIFA
+                
+                <!-- STATISTIK PANEL -->
+                <div class="stats-panel" id="stats-panel">
+                    <div class="stat-row">
+                        <span class="stat-value" id="stat-poss-1">0%</span>
+                        <span class="stat-label">Ballbesitz</span>
+                        <span class="stat-value" id="stat-poss-2">0%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-value" id="stat-shots-1">0</span>
+                        <span class="stat-label">Schüsse</span>
+                        <span class="stat-value" id="stat-shots-2">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-value" id="stat-sog-1">0</span>
+                        <span class="stat-label">Schüsse aufs Tor</span>
+                        <span class="stat-value" id="stat-sog-2">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-value" id="stat-corners-1">0</span>
+                        <span class="stat-label">Eckbälle</span>
+                        <span class="stat-value" id="stat-corners-2">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-value" id="stat-freekicks-1">0</span>
+                        <span class="stat-label">Freistöße</span>
+                        <span class="stat-value" id="stat-freekicks-2">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-value" id="stat-fouls-1">0</span>
+                        <span class="stat-label">Fouls</span>
+                        <span class="stat-value" id="stat-fouls-2">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-value yellow-card" id="stat-yellow-1">0</span>
+                        <span class="stat-label">Gelbe Karten</span>
+                        <span class="stat-value yellow-card" id="stat-yellow-2">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-value red-card" id="stat-red-1">0</span>
+                        <span class="stat-label">Rote Karten</span>
+                        <span class="stat-value red-card" id="stat-red-2">0</span>
+                    </div>
+                </div>
+            </div>
 
             <div class="scoreboard-side right">
                 <div class="score-box" id="team2-score">0</div>
@@ -240,49 +292,6 @@
                     <div class="team-name" id="team2-name">TBA</div>
                     <img class="flag" id="team2-flag" src="https://via.placeholder.com/40x26/333/FFF?text=?" alt="Team 2">
                 </div>
-            </div>
-        </div>
-
-        <div class="stats-panel" id="stats-panel">
-            <div class="stat-row">
-                <span class="stat-value" id="stat-poss-1">0%</span>
-                <span class="stat-label">Ballbesitz</span>
-                <span class="stat-value" id="stat-poss-2">0%</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-value" id="stat-shots-1">0</span>
-                <span class="stat-label">Schüsse</span>
-                <span class="stat-value" id="stat-shots-2">0</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-value" id="stat-sog-1">0</span>
-                <span class="stat-label">Schüsse aufs Tor</span>
-                <span class="stat-value" id="stat-sog-2">0</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-value" id="stat-corners-1">0</span>
-                <span class="stat-label">Eckbälle</span>
-                <span class="stat-value" id="stat-corners-2">0</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-value" id="stat-freekicks-1">0</span>
-                <span class="stat-label">Freistöße</span>
-                <span class="stat-value" id="stat-freekicks-2">0</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-value" id="stat-fouls-1">0</span>
-                <span class="stat-label">Fouls</span>
-                <span class="stat-value" id="stat-fouls-2">0</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-value yellow-card" id="stat-yellow-1">0</span>
-                <span class="stat-label">Gelbe Karten</span>
-                <span class="stat-value yellow-card" id="stat-yellow-2">0</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-value red-card" id="stat-red-1">0</span>
-                <span class="stat-label">Rote Karten</span>
-                <span class="stat-value red-card" id="stat-red-2">0</span>
             </div>
         </div>
     </div>
